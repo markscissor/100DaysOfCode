@@ -1,0 +1,213 @@
+###
+### main.py
+###
+from turtle import Screen
+from snake import Snake
+from food import Food
+from scoreboard import Scoreboard
+import time
+
+
+snake = Snake()
+food = Food()
+scoreboard = Scoreboard()
+game_on = True
+
+
+def exit_game():
+    global game_on
+    game_on = False
+
+
+screen = Screen()
+screen.setup(width=600, height=600)
+screen.bgcolor("black")
+screen.title("Snake Game 2022")
+screen.tracer(0)
+screen.listen()
+screen.onkey(snake.move_up, "w")
+screen.onkey(snake.move_down, "s")
+screen.onkey(snake.move_left, "a")
+screen.onkey(snake.move_right, "d")
+screen.onkey(exit_game, "e")
+
+
+while game_on:
+    time.sleep(0.2)
+    screen.update()
+    snake.move()
+
+    # Detect collision with food.
+    if snake.head.distance(food) < 15:
+        food.refresh()
+        scoreboard.add_score()
+        snake.extend_body()
+
+    # Detect collision with wall.
+    x_head = snake.segments[0].xcor()
+    y_head = snake.segments[0].ycor()
+    if x_head > 280 or x_head < -280 or y_head > 280 or y_head < -280:
+        scoreboard.game_over()
+        game_on = False
+
+    # Detect collision with tail.
+    for segment in snake.segments[1:]:
+        # print(snake.head.distance(segment))
+        # if segment == snake.head:
+        #     # print(f"head: {segment.position()}")
+        #     pass
+        if snake.head.distance(segment) < 10:
+            game_on = False
+            scoreboard.game_over()
+
+screen.exitonclick()
+
+###
+### main.py
+###
+
+###
+### snake.py
+###
+from turtle import Turtle
+
+
+class Snake:
+
+    def __init__(self):
+        self.segments = []
+        self.prev_h = []
+        self.size = 3
+        self.direction = 0
+        self.head = None
+        self.create_body()
+        self.print_pos()
+
+    def create_body(self):
+        for i in range(self.size):
+            self.add_segment((-i * 20, 0))
+
+        self.head = self.segments[0]
+
+    def add_segment(self, position):
+        turtle = Turtle()
+        turtle.shape("turtle")
+        turtle.color("cyan")
+        turtle.speed("fastest")
+        turtle.penup()
+        turtle.prev_x = None
+        turtle.prev_y = None
+        turtle.goto(position)
+        self.segments.append(turtle)
+        self.prev_h.append(turtle.heading())
+
+    def print_pos(self):
+        for segment in self.segments:
+            print(segment.position())
+
+    def extend_body(self):
+        self.size += 1
+        self.add_segment(self.segments[-1].position())
+
+    def move(self):
+        prev = self.prev_h
+        self.prev_h = []
+        for idx, seg in enumerate(self.segments):
+            seg.prev_x = seg.xcor()
+            seg.prev_y = seg.ycor()
+
+            if idx == 0:
+                seg.setheading(self.direction)
+                seg.forward(20)
+            else:
+                seg.setheading(prev[idx - 1])
+                seg.goto(self.segments[idx - 1].prev_x, self.segments[idx - 1].prev_y)
+
+            self.prev_h.append(seg.heading())
+
+    def move_up(self):
+        if not self.direction == 270:
+            self.direction = 90
+        # print("move up")
+
+    def move_down(self):
+        if not self.direction == 90:
+            self.direction = 270
+        # print("move down")
+
+    def move_left(self):
+        if not self.direction == 0:
+            self.direction = 180
+        # print("move left")
+
+    def move_right(self):
+        if not self.direction == 180:
+            self.direction = 0
+        # print("move right")
+
+###
+### snake.py
+###
+
+###
+### scoreboard.py
+###
+from turtle import Turtle
+ALIGNMENT = "center"
+FONT = ('Courier', 20, 'normal')
+
+
+class Scoreboard(Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.score = 0
+        self.shape("square")
+        self.penup()
+        self.hideturtle()
+        self.pencolor("white")
+        self.goto(0, 270)
+        self.print_score()
+
+    def add_score(self):
+        self.score += 1
+        self.print_score()
+
+    def print_score(self):
+        self.clear()
+        self.write(arg=f"SCORE : {self.score}", move=False, align=ALIGNMENT, font=FONT)
+
+    def game_over(self):
+        self.goto(0, 0)
+        self.write(arg="GAME OVER", move=False, align=ALIGNMENT, font=FONT)
+
+###
+### scoreboard.py
+###
+
+###
+### food.py
+###
+from turtle import Turtle
+import random
+
+
+class Food(Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.shape("circle")
+        self.penup()
+        self.shapesize(stretch_len=0.5, stretch_wid=0.5)
+        self.color("green")
+        self.speed("fastest")
+        self.refresh()
+
+    def refresh(self):
+        random_x = random.randrange(-260, 260, 20)
+        random_y = random.randrange(-260, 260, 20)
+        self.goto(random_x, random_y)
+
+###
+### food.py
+###
