@@ -5,7 +5,7 @@ import pyperclip
 import json
 
 
-# ---------------------------- PASSWORD GENERATOR ------------------------------- #
+# ------------------------------- FIND PASSWORD --------------------------------- #
 def find_password():
     website = web_entry.get()
     try:
