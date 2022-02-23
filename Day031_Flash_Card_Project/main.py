@@ -4,59 +4,60 @@ import random as rd
 
 
 BACKGROUND_COLOR = "#B1DDC6"
-prev_fr = ""
-data = pd.read_csv("data/french_words.csv")
-data_dict = data.to_dict()
-# print(data_dict)
-learned_words_list = []
-total_word_pairs = len(data_dict['French'])
-print(total_word_pairs)
-fr_ = ""
-en_ = ""
+current_card = {}
+to_learn = {}
+
+
+try:
+    data_to_learn = pd.read_csv("data/to_learn.csv")
+except FileNotFoundError:
+    data_original = pd.read_csv("data/french_words.csv")
+    to_learn = data_original.to_dict(orient="records")
+else:
+    to_learn = data_to_learn.to_dict(orient="records")
+
+
+def save_words():
+    data = pd.DataFrame(to_learn)
+    data.to_csv("data/to_learn.csv", index=False)
 
 
 def pick_words():
-    word_index = rd.randint(0, 100)
-    fr_word = data_dict['French'][word_index]
-    en_word = data_dict['English'][word_index]
-    if len(learned_words_list) >= total_word_pairs:
-        print("All word pairs learned.")
-        return "All word pairs learned", ""
-    elif fr_word in learned_words_list:
-        return pick_words()
-    else:
-        return fr_word, en_word
+    global current_card
+    current_card = rd.choice(to_learn)
+    return current_card
 
 
 def unknown_word():
-    global prev_fr, flip_timer
+    global flip_timer
     window.after_cancel(flip_timer)
-    global fr_, en_
-    fr_, en_ = pick_words()
+    pick_words()
     canvas.itemconfig(title_text, text="French", fill="black")
-    canvas.itemconfig(word_text, text=fr_, fill="black")
+    canvas.itemconfig(word_text, text=current_card['French'], fill="black")
     canvas.itemconfig(img_on_canvas, image=card_front_img)
-    prev_fr = fr_
+
     flip_timer = window.after(3000, func=flip_card)
 
 
 def known_word():
-    global prev_fr, flip_timer
+    global flip_timer
     window.after_cancel(flip_timer)
-    global fr_, en_
-    fr_, en_ = pick_words()
+
+    to_learn.remove(current_card)
+    print(f"{current_card['French']} learned. {len(to_learn)} words remaining.")
+    save_words()
+
+    pick_words()
     canvas.itemconfig(title_text, text="French", fill="black")
-    canvas.itemconfig(word_text, text=fr_, fill="black")
+    canvas.itemconfig(word_text, text=current_card['French'], fill="black")
     canvas.itemconfig(img_on_canvas, image=card_front_img)
-    learned_words_list.append(prev_fr)
-    print(f"{prev_fr} learned. {len(learned_words_list)} words learned.")
-    prev_fr = fr_
+
     flip_timer = window.after(3000, func=flip_card)
 
 
 def flip_card():
     canvas.itemconfig(title_text, text="English", fill="white")
-    canvas.itemconfig(word_text, text=en_, fill="white")
+    canvas.itemconfig(word_text, text=current_card["English"], fill="white")
     canvas.itemconfig(img_on_canvas, image=card_back_img)
 
 
