@@ -3,12 +3,9 @@ from datetime import datetime
 import smtplib
 import pytz
 import time
-import secret_codes
+from secret_codes import MY_EMAIL, MY_PASSWORD
 
 
-# print(local_time)
-MY_EMAIL = secret_codes.MY_EMAIL
-MY_PASSWORD = secret_codes.MY_PASSWORD
 MY_LAT = 25.204849  # Your latitude
 MY_LONG = 55.270782  # Your longitude
 
@@ -33,11 +30,9 @@ def check_iss():
     data = response.json()
     sunrise = int(data["results"]["sunrise"].split("T")[1].split(":")[0])
     sunset = int(data["results"]["sunset"].split("T")[1].split(":")[0])
-    # print(sunrise, sunset)
-    # time_now = datetime.now()
+
     local_time = datetime.now(pytz.timezone('Asia/Dubai'))
     hour_now = local_time.hour
-    # print(hour_now)
 
     cond_1 = hour_now <= sunrise or hour_now >= sunset
     cond_2 = abs(MY_LAT - iss_latitude) <= 5
