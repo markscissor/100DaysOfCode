@@ -40,11 +40,11 @@ today = datetime.now()
 
 entry_data = {
     "date": today.strftime("%Y%m%d"),
-    "quantity": "2.82",
+    "quantity": input("How many kilometers did you run today? "),
 }
 
-# response = requests.post(url=entry_endpoint, json=entry_data, headers=headers)
-# print(response.text)
+response = requests.post(url=entry_endpoint, json=entry_data, headers=headers)
+print(response.text)
 
 date_to_edit = "20211207"
 
@@ -57,7 +57,7 @@ update_data = {
 # response = requests.put(url=update_endpoint, json=update_data, headers=headers)
 # print(response.text)
 
-delete_endpoint = f"{pixela_endpoint}/{USERNAME}/graphs/{graph_config['id']}/{date_to_edit}"
+# delete_endpoint = f"{pixela_endpoint}/{USERNAME}/graphs/{graph_config['id']}/{date_to_edit}"
 
-response = requests.delete(url=delete_endpoint, headers=headers)
-print(response.text)
+# response = requests.delete(url=delete_endpoint, headers=headers)
+# print(response.text)
