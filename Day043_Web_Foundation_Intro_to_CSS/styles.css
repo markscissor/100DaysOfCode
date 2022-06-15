@@ -1,0 +1,38 @@
+body {
+    background-color: #DFF6FF;
+}
+
+hr {
+    border-style: dotted none none;
+    border-width: 10px;
+    border-color: gray;
+    width: 5%;
+}
+img {
+    border-radius: 50%; 
+    height: 300px;
+}
+
+img:hover {
+    height: 350px;
+}
+
+h1 {
+    color: #1363DF;
+}
+
+h3 {
+    color: #47B5FF;
+}
+
+a:hover {
+    background-color: gold;
+}
+
+li:hover {
+    font-size: large;
+}
+
+td:hover {
+    font-size: large;
+}
