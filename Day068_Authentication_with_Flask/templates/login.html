@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block styles %}
+{{super()}}
+<style>
+  .control-label {display: none;}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="box">
+    <h1>Login</h1>
+    
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_errors(form, hiddens="only") }}
+        {% if email is defined %}
+        {{ wtf.form_field(form.email, class='', autofocus=false) }}
+        {% else %}
+        {{ wtf.form_field(form.email, class='', autofocus=true) }}
+        {% endif %}
+        {{ wtf.form_field(form.password, class='', autofocus=true) }}
+        {{ wtf.form_field(form.submit, class='btn btn-primary btn-block btn-large') }}
+
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+         <p>{{ message }}</p>  
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <!-- <form action="{{ url_for('login') }}" method="post">
+        <input type="text" name="email" placeholder="Email" required="required"/>
+        <input type="password" name="password" placeholder="Password" required="required"/>
+        <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
+    </form> -->
+</div>
+
+{% endblock %}
